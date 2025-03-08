@@ -25,7 +25,7 @@ struct PLIC {
 
 void plic_init(struct PLIC *plic);
 
-void plic_update_intterupt(struct PLIC *plic, bool interrupt, u32 interrupt_num);
+void plic_update_interrupt(struct PLIC *plic, bool interrupt, u32 interrupt_num);
 
 bool plic_check_irq(struct PLIC *plic, u32 context_id);
 

@@ -1,4 +1,5 @@
 #include "debug.h"
+#include "device/plic.h"
 #include "machine/spike.h"
 #include "string.h"
 
@@ -20,3 +21,12 @@ struct RiscvCore *difftest_init(const u8 *data, u64 data_size) {
 }
 
 void difftest_step(void) { spike_machine_step(&machine); }
+
+void difftest_interrupt(const u64 ip) {
+    machine.core.csrs[MIP] = ip;
+    if ((ip == 0x200) | (ip == 0x800)) {
+        plic_update_interrupt(&machine.plic, true, 1);
+    }else{
+        plic_update_interrupt(&machine.plic, false, 1);
+    }
+}

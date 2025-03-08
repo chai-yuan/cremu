@@ -1,5 +1,6 @@
 #include "device/plic.h"
 #include "core/riscv.h"
+#include "debug.h"
 
 void plic_init(struct PLIC *plic) {
     for (int i = 0; i < sizeof(struct PLIC); i++)
@@ -14,7 +15,8 @@ bool plic_check_irq(struct PLIC *plic, u32 context_id) {
     // 检查是否有任何中断等待处理
     for (int i = 0; i < (SOURCE_NUM + 32) / 32; i++) {
         // 当前挂起且启用的中断
-        u32 pending_enabled = plic->pending[i] & plic->enable[context_id][i];
+        //   u32 pending_enabled = plic->pending[i] & plic->enable[context_id][i];
+        u32 pending_enabled = plic->pending[i];
 
         if (pending_enabled) {
             // 查找优先级高于阈值的中断
@@ -31,11 +33,10 @@ bool plic_check_irq(struct PLIC *plic, u32 context_id) {
             }
         }
     }
-
     return false;
 }
 
-void plic_update_intterupt(struct PLIC *plic, bool interrupt, u32 interrupt_num) {
+void plic_update_interrupt(struct PLIC *plic, bool interrupt, u32 interrupt_num) {
     if (interrupt_num == 0 || interrupt_num > SOURCE_NUM) {
         return; // 忽略无效的中断号
     }
@@ -91,11 +92,7 @@ static enum exception plic_read(void *context, u64 addr, u8 size, usize *data) {
     // 完成寄存器
     if ((addr & 0xf) == 0x4) {
         u32 context_idx = (addr & 0xffff) / 0x1000;
-        if (context_idx == 1) {
-            *data = 0x1;
-            return EXC_NONE;
-        }
-        *data = plic->claim[context_idx];
+        *data           = plic->claim[context_idx];
         return EXC_NONE;
     }
 
