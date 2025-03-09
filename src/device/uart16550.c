@@ -1,6 +1,7 @@
 #include "device/uart16550.h"
 #include "device/device.h"
 #include "types.h"
+#include "debug.h"
 
 void uart_init(struct UART16550 *uart, get_char_func_t get, put_char_func_t put) {
     uart->get_char       = get;
