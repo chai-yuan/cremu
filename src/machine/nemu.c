@@ -8,8 +8,8 @@ void nemu_machine_init(struct NemuMachine *machine, struct NemuPortableOperation
     bus_device_add(&machine->bus, 0x80000000, machine->sram.len, sram_get_func(&machine->sram));
     bus_device_add(&machine->bus, 0x10000000, UART_SIZE, uart_get_func(&machine->uart));
 
-    riscvcore_init(&machine->core, bus_device_get_func(&machine->bus));
+    rvcore_init(&machine->core, bus_device_get_func(&machine->bus));
     machine->core.pc = 0x80000000;
 }
 
-void nemu_machine_step(struct NemuMachine *machine) { riscvcore_step(&machine->core, (struct RiscvEnvInfo){0}); }
+void nemu_machine_step(struct NemuMachine *machine) { rvcore_step(&machine->core, (struct RiscvEnvInfo){0}); }

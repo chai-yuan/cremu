@@ -1,7 +1,7 @@
 #include "core.h"
 #include "debug.h"
 
-void riscv_trap_handle_s(struct RiscvCore *core, usize cause) {
+void rvcore_trap_handle_s(struct RiscvCore *core, usize cause) {
     usize vec   = (DEC.interrupt != INT_NONE && STVEC_MODE == 1) ? (4 * cause) : 0;
     DEC.next_pc = STVEC_BASE + vec;
     MSTATUS_SET_SPP(core->mode & 0x1);
@@ -13,7 +13,7 @@ void riscv_trap_handle_s(struct RiscvCore *core, usize cause) {
     MSTATUS_SET_SIE(0);
 }
 
-void riscv_trap_handle_m(struct RiscvCore *core, usize cause) {
+void rvcore_trap_handle_m(struct RiscvCore *core, usize cause) {
     usize vec   = (DEC.interrupt != INT_NONE && MTVEC_MODE == 1) ? (4 * cause) : 0;
     DEC.next_pc = MTVEC_BASE + vec;
     MSTATUS_SET_MPP(core->mode);
@@ -25,28 +25,28 @@ void riscv_trap_handle_m(struct RiscvCore *core, usize cause) {
     MSTATUS_SET_MIE(0);
 }
 
-void riscv_trap_handle(struct RiscvCore *core) {
+void rvcore_trap_handle(struct RiscvCore *core) {
     if (DEC.interrupt != INT_NONE) {
         usize cause = DEC.interrupt | INT_MIN;
         if ((core->mode <= SUPERVISOR) && ((core->csrs[MIDELEG] >> (u16)cause) & 1)) { // 中断委托
-            riscv_trap_handle_s(core, cause);
+            rvcore_trap_handle_s(core, cause);
         } else {
-            riscv_trap_handle_m(core, cause);
+            rvcore_trap_handle_m(core, cause);
         }
         core->wfi = false; // 触发中断后清除休眠标志
     } else if (DEC.exception != EXC_NONE) {
         usize cause = DEC.exception;
         if ((core->mode <= SUPERVISOR) && ((core->csrs[MEDELEG] >> (u16)cause) & 1)) { // 异常委托
-            riscv_trap_handle_s(core, cause);
+            rvcore_trap_handle_s(core, cause);
         } else {
-            riscv_trap_handle_m(core, cause);
+            rvcore_trap_handle_m(core, cause);
         }
     } else {
         return;
     }
 }
 
-bool riscv_check_pending_interrupt(struct RiscvCore *core) {
+bool rvcore_check_pending_interrupt(struct RiscvCore *core) {
     usize pending = core->csrs[MIP] & core->csrs[MIE];
     if (pending == 0)
         return false;

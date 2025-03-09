@@ -4,28 +4,24 @@
 #include "core/riscv.h"
 #include "core/rvcore.h"
 
-void riscv_decode_init(struct RiscvDecode *decode);
+void rvcore_decode_init(struct RiscvDecode *decode);
 
-bool riscv_csr_read(struct RiscvCore *core, u16 addr, usize *value);
-void riscv_csr_write(struct RiscvCore *core, u16 addr, usize value);
+bool rvcore_csr_read(struct RiscvCore *core, u16 addr, usize *value);
+void rvcore_csr_write(struct RiscvCore *core, u16 addr, usize value);
 
-enum exception riscvcore_mmu_read(struct RiscvCore *core, usize addr, u8 size, usize *data);
-enum exception riscvcore_mmu_write(struct RiscvCore *core, usize addr, u8 size, usize data);
-void           riscvcore_mmu_fetch(struct RiscvCore *core);
-
-void riscvcore_exec(struct RiscvCore *core);
-void riscv_trap_handle(struct RiscvCore *core);
-bool riscv_check_pending_interrupt(struct RiscvCore *core);
+void rvcore_exec(struct RiscvCore *core);
+void rvcore_trap_handle(struct RiscvCore *core);
+bool rvcore_check_pending_interrupt(struct RiscvCore *core);
 
 #define CSRR(addr, value)                                                                                              \
     do {                                                                                                               \
-        if (!riscv_csr_read(core, addr, &value)) {                                                                     \
+        if (!rvcore_csr_read(core, addr, &value)) {                                                                     \
             DEC.exception     = ILLEGAL_INSTRUCTION;                                                                   \
             DEC.exception_val = DEC.inst;                                                                              \
             return;                                                                                                    \
         }                                                                                                              \
     } while (0);
-#define CSRW(addr, value) riscv_csr_write(core, addr, value)
+#define CSRW(addr, value) rvcore_csr_write(core, addr, value)
 
 #define DR(addr, size, value) core->device_func.read(core->device_func.context, addr, size, value)
 #define DW(addr, size, value) core->device_func.write(core->device_func.context, addr, size, value)
@@ -42,14 +38,14 @@ struct Instruction {
 #define DEC core->decode
 #define MR(addr, size, data)                                                                                           \
     do {                                                                                                               \
-        if (EXC_NONE != (DEC.exception = riscvcore_mmu_read(core, addr, size, &data))) {                               \
+        if (EXC_NONE != (DEC.exception = rvcore_mmu_read(core, addr, size, &data))) {                               \
             DEC.exception_val = addr;                                                                                  \
             return;                                                                                                    \
         }                                                                                                              \
     } while (0);
 #define MW(addr, size, data)                                                                                           \
     do {                                                                                                               \
-        if (EXC_NONE != (DEC.exception = riscvcore_mmu_write(core, addr, size, data)))                                 \
+        if (EXC_NONE != (DEC.exception = rvcore_mmu_write(core, addr, size, data)))                                 \
             DEC.exception_val = addr;                                                                                  \
     } while (0);
 

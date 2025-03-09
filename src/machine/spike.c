@@ -117,7 +117,7 @@ void spike_machine_init(struct SpikeMachine *machine, struct SpikePortableOperat
     bus_device_add(&machine->bus, 0x02000000, CLINT_SIZE, clint_get_func(&machine->clint));
     bus_device_add(&machine->bus, 0x00001000, machine->rom.len, sram_get_func(&machine->rom));
 
-    riscvcore_init(&machine->core, bus_device_get_func(&machine->bus));
+    rvcore_init(&machine->core, bus_device_get_func(&machine->bus));
 
     // 将设备树文件写入rom中
     u8 *boot_rom_p = (u8 *)(&boot_rom[8]);
@@ -128,7 +128,7 @@ void spike_machine_init(struct SpikeMachine *machine, struct SpikePortableOperat
 void spike_machine_step(struct SpikeMachine *machine) {
     plic_update_interrupt(&machine->plic, uart_check_irq(&machine->uart), 1);
 
-    riscvcore_step(&machine->core, (struct RiscvEnvInfo){.meint = false,
+    rvcore_step(&machine->core, (struct RiscvEnvInfo){.meint = false,
                                                          .seint = plic_check_irq(&machine->plic, 1),
                                                          .mtint = clint_check_irq(&machine->clint),
                                                          .time  = clint_get_time(&machine->clint)});

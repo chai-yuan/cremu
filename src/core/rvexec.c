@@ -1,7 +1,7 @@
 #include "core.h"
 #include "debug.h"
 
-void riscv_decode_init(struct RiscvDecode *decode) {
+void rvcore_decode_init(struct RiscvDecode *decode) {
     decode->inst          = 0;
     decode->exception     = EXC_NONE;
     decode->exception_val = 0;
@@ -21,7 +21,7 @@ u64 SEXT(u64 imm, u64 n) {
         return imm & MASK(n);
 }
 
-static void riscv_decode_inst(struct RiscvDecode *decode) {
+static void rvcore_decode_inst(struct RiscvDecode *decode) {
     u32 inst = decode->inst;
     if ((inst & 0x3) == 0x3) {
         decode->is_inst16 = false;
@@ -48,17 +48,26 @@ static void riscv_decode_inst(struct RiscvDecode *decode) {
     }
 }
 
-extern struct Instruction instructions[];
+extern struct Instruction instructions32[];
+extern struct Instruction instructions16[];
 
-void riscvcore_exec(struct RiscvCore *core) {
-    riscv_decode_inst(&core->decode);
-    DEC.next_pc = DEC.is_inst16 ? core->pc + 2 : core->pc + 4;
+void rvcore_exec(struct RiscvCore *core) {
+    rvcore_decode_inst(&core->decode);
 
-    for (u32 i = 0;; i++) {
-        if ((DEC.inst & instructions[i].mask) == instructions[i].match) {
-            instructions[i].func(core);
-            break;
-        }
+    if (DEC.is_inst16) {
+        DEC.next_pc = core->pc + 2;
+        for (u32 i = 0;; i++)
+            if ((DEC.inst & instructions16[i].mask) == instructions16[i].match) {
+                instructions16[i].func(core);
+                break;
+            }
+    } else {
+        DEC.next_pc = core->pc + 4;
+        for (u32 i = 0;; i++)
+            if ((DEC.inst & instructions32[i].mask) == instructions32[i].match) {
+                instructions32[i].func(core);
+                break;
+            }
     }
 
     core->regs[0] = 0;

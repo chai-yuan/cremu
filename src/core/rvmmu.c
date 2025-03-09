@@ -73,7 +73,7 @@ enum exception mmu_translate(struct RiscvCore *core, enum exception exc, usize a
     return EXC_NONE;
 }
 
-enum exception riscvcore_mmu_read(struct RiscvCore *core, usize addr, u8 size, usize *data) {
+enum exception rvcore_mmu_read(struct RiscvCore *core, usize addr, u8 size, usize *data) {
     u64 paddr = addr;
     if (mmu_translate(core, LOAD_PAGE_FAULT, addr, &paddr) != EXC_NONE) {
         return LOAD_PAGE_FAULT;
@@ -81,7 +81,7 @@ enum exception riscvcore_mmu_read(struct RiscvCore *core, usize addr, u8 size, u
     return DR(paddr, size, data);
 }
 
-enum exception riscvcore_mmu_write(struct RiscvCore *core, usize addr, u8 size, usize data) {
+enum exception rvcore_mmu_write(struct RiscvCore *core, usize addr, u8 size, usize data) {
     u64 paddr = addr;
     if (mmu_translate(core, STORE_AMO_PAGE_FAULT, addr, &paddr) != EXC_NONE) {
         return STORE_AMO_PAGE_FAULT;
@@ -89,7 +89,7 @@ enum exception riscvcore_mmu_write(struct RiscvCore *core, usize addr, u8 size, 
     return DW(paddr, size, data);
 }
 
-void riscvcore_mmu_fetch(struct RiscvCore *core) {
+void rvcore_mmu_fetch(struct RiscvCore *core) {
     u64   paddr = core->pc;
     usize inst  = 0;
     if (mmu_translate(core, INSTRUCTION_PAGE_FAULT, core->pc, &paddr) != EXC_NONE) {

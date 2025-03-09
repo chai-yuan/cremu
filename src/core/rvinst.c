@@ -595,7 +595,7 @@ void inst_inv(struct RiscvCore *core) {
     WARN("Unknow instruction : %x", DEC.inst);
 }
 
-struct Instruction instructions[] = {
+struct Instruction instructions32[] = {
     {.mask = 0xfe00707f, .match = 0x33, .func = inst_add},
     {.mask = 0xfe00707f, .match = 0x40000033, .func = inst_sub},
     {.mask = 0xfe00707f, .match = 0x4033, .func = inst_xor},
@@ -633,36 +633,6 @@ struct Instruction instructions[] = {
     {.mask = 0x7f, .match = 0x37, .func = inst_lui},
     {.mask = 0x7f, .match = 0x6f, .func = inst_jal},
     {.mask = 0x7f, .match = 0x17, .func = inst_auipc},
-
-    {.mask = 0xffff, .match = 0x0000, .func = inst_c_unimp},
-    {.mask = 0xe003, .match = 0x2001, .func = inst_c_addiw},
-    {.mask = 0xef83, .match = 0x6101, .func = inst_c_addi16sp},
-    {.mask = 0xef83, .match = 0x1, .func = inst_c_nop},
-    {.mask = 0xec03, .match = 0x8001, .func = inst_c_srli},
-    {.mask = 0xec03, .match = 0x8401, .func = inst_c_srai},
-    {.mask = 0xec03, .match = 0x8801, .func = inst_c_andi},
-    {.mask = 0xffff, .match = 0x9002, .func = inst_c_ebreak},
-    {.mask = 0xfc63, .match = 0x8c01, .func = inst_c_sub},
-    {.mask = 0xfc63, .match = 0x8c21, .func = inst_c_xor},
-    {.mask = 0xfc63, .match = 0x8c41, .func = inst_c_or},
-    {.mask = 0xfc63, .match = 0x8c61, .func = inst_c_and},
-    {.mask = 0xf07f, .match = 0x8002, .func = inst_c_jr},
-    {.mask = 0xf07f, .match = 0x9002, .func = inst_c_jalr},
-    {.mask = 0xf003, .match = 0x9002, .func = inst_c_add},
-    {.mask = 0xf003, .match = 0x8002, .func = inst_c_mv},
-    {.mask = 0xe003, .match = 0x0, .func = inst_c_addi4spn},
-    {.mask = 0xe003, .match = 0x1, .func = inst_c_addi},
-    {.mask = 0xe003, .match = 0x4000, .func = inst_c_lw},
-    {.mask = 0xe003, .match = 0xc000, .func = inst_c_sw},
-    {.mask = 0xe003, .match = 0xa001, .func = inst_c_j},
-    {.mask = 0xe003, .match = 0x2001, .func = inst_c_jal},
-    {.mask = 0xe003, .match = 0xc001, .func = inst_c_beqz},
-    {.mask = 0xe003, .match = 0xe001, .func = inst_c_bnez},
-    {.mask = 0xe003, .match = 0x4001, .func = inst_c_li},
-    {.mask = 0xe003, .match = 0x6001, .func = inst_c_lui},
-    {.mask = 0xe003, .match = 0xc002, .func = inst_c_swsp},
-    {.mask = 0xe003, .match = 0x4002, .func = inst_c_lwsp},
-    {.mask = 0xe003, .match = 0x2, .func = inst_c_slli},
 
     {.mask = 0xfe00707f, .match = 0x2000033, .func = inst_mul},
     {.mask = 0xfe00707f, .match = 0x2001033, .func = inst_mulh},
@@ -732,7 +702,44 @@ struct Instruction instructions[] = {
     {.mask = 0xf800707f, .match = 0xa000302f, .func = inst_amomax_d},
     {.mask = 0xf800707f, .match = 0xc000302f, .func = inst_amominu_d},
     {.mask = 0xf800707f, .match = 0xe000302f, .func = inst_amomaxu_d},
+#endif
 
+    {.mask = 0xffffffff, .match = 0x10500073, .func = inst_wfi},
+    {.mask = 0x0, .match = 0x0, .func = inst_inv},
+};
+
+struct Instruction instructions16[] = {
+    {.mask = 0xffff, .match = 0x0000, .func = inst_c_unimp},
+    {.mask = 0xe003, .match = 0x2001, .func = inst_c_addiw},
+    {.mask = 0xef83, .match = 0x6101, .func = inst_c_addi16sp},
+    {.mask = 0xef83, .match = 0x1, .func = inst_c_nop},
+    {.mask = 0xec03, .match = 0x8001, .func = inst_c_srli},
+    {.mask = 0xec03, .match = 0x8401, .func = inst_c_srai},
+    {.mask = 0xec03, .match = 0x8801, .func = inst_c_andi},
+    {.mask = 0xffff, .match = 0x9002, .func = inst_c_ebreak},
+    {.mask = 0xfc63, .match = 0x8c01, .func = inst_c_sub},
+    {.mask = 0xfc63, .match = 0x8c21, .func = inst_c_xor},
+    {.mask = 0xfc63, .match = 0x8c41, .func = inst_c_or},
+    {.mask = 0xfc63, .match = 0x8c61, .func = inst_c_and},
+    {.mask = 0xf07f, .match = 0x8002, .func = inst_c_jr},
+    {.mask = 0xf07f, .match = 0x9002, .func = inst_c_jalr},
+    {.mask = 0xf003, .match = 0x9002, .func = inst_c_add},
+    {.mask = 0xf003, .match = 0x8002, .func = inst_c_mv},
+    {.mask = 0xe003, .match = 0x0, .func = inst_c_addi4spn},
+    {.mask = 0xe003, .match = 0x1, .func = inst_c_addi},
+    {.mask = 0xe003, .match = 0x4000, .func = inst_c_lw},
+    {.mask = 0xe003, .match = 0xc000, .func = inst_c_sw},
+    {.mask = 0xe003, .match = 0xa001, .func = inst_c_j},
+    {.mask = 0xe003, .match = 0x2001, .func = inst_c_jal},
+    {.mask = 0xe003, .match = 0xc001, .func = inst_c_beqz},
+    {.mask = 0xe003, .match = 0xe001, .func = inst_c_bnez},
+    {.mask = 0xe003, .match = 0x4001, .func = inst_c_li},
+    {.mask = 0xe003, .match = 0x6001, .func = inst_c_lui},
+    {.mask = 0xe003, .match = 0xc002, .func = inst_c_swsp},
+    {.mask = 0xe003, .match = 0x4002, .func = inst_c_lwsp},
+    {.mask = 0xe003, .match = 0x2, .func = inst_c_slli},
+    
+#if CURRENT_ARCH == ARCH_RV64
     {.mask = 0xfc63, .match = 0x9c01, .func = inst_c_subw},
     {.mask = 0x9c21, .match = 0x9c21, .func = inst_c_addw},
     {.mask = 0xe003, .match = 0x6002, .func = inst_c_ldsp},
@@ -740,7 +747,4 @@ struct Instruction instructions[] = {
     {.mask = 0xe003, .match = 0x6000, .func = inst_c_ld},
     {.mask = 0xe003, .match = 0xe000, .func = inst_c_sd},
 #endif
-
-    {.mask = 0xffffffff, .match = 0x10500073, .func = inst_wfi},
-    {.mask = 0x0, .match = 0x0, .func = inst_inv},
 };

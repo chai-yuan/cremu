@@ -3,7 +3,7 @@
 #include "core/riscv.h"
 #include "debug.h"
 
-void riscvcore_update(struct RiscvCore *core, struct RiscvEnvInfo envinfo) {
+void rvcore_update(struct RiscvCore *core, struct RiscvEnvInfo envinfo) {
     core->csrs[MIP] = 0;
     core->csrs[MIP] |= envinfo.meint ? (1 << MACHINE_EXTERNAL_INTERRUPT) : 0;
     core->csrs[MIP] |= envinfo.seint ? (1 << SUPERVISOR_EXTERNAL_INTERRUPT) : 0;
@@ -12,25 +12,25 @@ void riscvcore_update(struct RiscvCore *core, struct RiscvEnvInfo envinfo) {
     core->csrs[TIME] = envinfo.time;
 }
 
-void riscvcore_step(struct RiscvCore *core, struct RiscvEnvInfo envinfo) {
-    riscvcore_update(core, envinfo);
-    riscv_decode_init(&core->decode);
+void rvcore_step(struct RiscvCore *core, struct RiscvEnvInfo envinfo) {
+    rvcore_update(core, envinfo);
+    rvcore_decode_init(&core->decode);
 
-    if (riscv_check_pending_interrupt(core)) {
-        riscv_trap_handle(core);
+    if (rvcore_check_pending_interrupt(core)) {
+        rvcore_trap_handle(core);
     } else if (!core->wfi) { // 如果没有处于休眠
-        riscvcore_mmu_fetch(core);
+        rvcore_mmu_fetch(core);
         if (core->decode.exception == EXC_NONE)
-            riscvcore_exec(core);
+            rvcore_exec(core);
 
         if (core->decode.exception != EXC_NONE)
-            riscv_trap_handle(core);
+            rvcore_trap_handle(core);
     }
 
     core->pc = core->decode.next_pc;
 }
 
-void riscvcore_init(struct RiscvCore *core, struct DeviceFunc device_func) {
+void rvcore_init(struct RiscvCore *core, struct DeviceFunc device_func) {
     for (int i = 0; i < sizeof(struct RiscvCore); i++)
         *((u8 *)core + i) = 0;
     core->pc               = 0x00001000;

@@ -1,6 +1,6 @@
 #include "core.h"
 
-bool riscv_csr_read(struct RiscvCore *core, u16 addr, usize *value) {
+bool rvcore_csr_read(struct RiscvCore *core, u16 addr, usize *value) {
     if (((addr >> 8) & 0x3) > core->mode) // 权限检查
         return false;
 
@@ -32,7 +32,7 @@ bool riscv_csr_read(struct RiscvCore *core, u16 addr, usize *value) {
     return true;
 }
 
-void riscv_csr_write(struct RiscvCore *core, u16 addr, usize value) {
+void rvcore_csr_write(struct RiscvCore *core, u16 addr, usize value) {
     if ((addr >> 10) == 0x3) // read only
         return;
     if (addr == MISA) // 简化实现，misa不可写

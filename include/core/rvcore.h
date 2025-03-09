@@ -35,8 +35,13 @@ struct RiscvCore {
     struct DeviceFunc  device_func;
 };
 
-void riscvcore_init(struct RiscvCore *core, struct DeviceFunc device_func);
+// basic
+void rvcore_init(struct RiscvCore *core, struct DeviceFunc device_func);
+void rvcore_step(struct RiscvCore *core, struct RiscvEnvInfo envinfo);
+// mmu
+enum exception rvcore_mmu_read(struct RiscvCore *core, usize addr, u8 size, usize *data);
+enum exception rvcore_mmu_write(struct RiscvCore *core, usize addr, u8 size, usize data);
+void           rvcore_mmu_fetch(struct RiscvCore *core);
 
-void riscvcore_step(struct RiscvCore *core, struct RiscvEnvInfo envinfo);
-
+void rvcore_update(struct RiscvCore *core, struct RiscvEnvInfo envinfo);
 #endif

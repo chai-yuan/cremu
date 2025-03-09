@@ -100,7 +100,7 @@ static void uart_update(void *context, u32 interval) {
 
     // 检查输入
     uart->last_update += interval;
-    if (!uart->get_char || uart->last_update < 20000)
+    if (!uart->get_char || uart->last_update < 50000)
         return;
     uart->last_update = 0;
 
