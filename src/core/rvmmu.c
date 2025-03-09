@@ -2,6 +2,45 @@
 #include "debug.h"
 
 enum exception mmu_translate_sv32(struct RiscvCore *core, enum exception exc, usize addr, u64 *paddr) {
+    i32 level = 2;
+    u32 ppn   = SATP_PPN;
+    u32 pt_addr[2];
+    u32 pt_entry[2];
+    u32 vaddr[] = {
+        (addr >> 12) & 0x3ff,
+        (addr >> 22) & 0x3ff,
+    };
+
+    while (1) {
+        level--;
+        if (level < 0)
+            return exc;
+
+        pt_addr[level] = (ppn << 12) | (vaddr[level] << 2);
+        if (DR(pt_addr[level], 4, (usize *)&pt_entry[level]) != EXC_NONE)
+            return exc;
+
+        if (SV32_V(pt_entry[level]) == 0) // 有效位检查
+            return exc;
+        if (SV32_R(pt_entry[level]) || SV32_X(pt_entry[level]) || SV32_W(pt_entry[level])) { // 叶节点
+            switch (level) {
+            case 0: {
+                *paddr = (SV32_PPN(pt_entry[level]) << 12) | (addr & 0xfff);
+                break;
+            }
+            case 1: {
+                *paddr = (SV32_PPN(pt_entry[level]) << 12) | (addr & 0x3fffff);
+                break;
+            }
+            default:
+                ERROR("Does not support page level");
+            }
+            break;
+        }
+
+        ppn = SV32_PPN(pt_entry[level]);
+    }
+
     return EXC_NONE;
 }
 
@@ -15,7 +54,7 @@ enum exception mmu_translate_sv39(struct RiscvCore *core, enum exception exc, us
         (addr >> 21) & 0x1ff,
         (addr >> 30) & 0x1ff,
     };
-    // 查找叶节点表项
+
     while (1) {
         level--;
         if (level < 0)
@@ -49,7 +88,6 @@ enum exception mmu_translate_sv39(struct RiscvCore *core, enum exception exc, us
 
         ppn = SV39_PPN(pt_entry[level]);
     }
-    // 设置脏位 TODO
 
     //INFO("vaddr : %llx -> paddr : %llx", addr, *paddr);
     return EXC_NONE;
