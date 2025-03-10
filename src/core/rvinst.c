@@ -303,6 +303,7 @@ void inst_c_j(struct RiscvCore *core) {
     DEC.next_pc = core->pc + offset;
 }
 void inst_c_jal(struct RiscvCore *core) {
+    INFO("c_jal exec");
     usize offset = ((DEC.inst >> 2) & 0x1) << 5 | ((DEC.inst >> 3) & 0x7) << 1 | ((DEC.inst >> 6) & 0x1) << 7 |
                    ((DEC.inst >> 7) & 0x1) << 6 | ((DEC.inst >> 8) & 0x1) << 10 | ((DEC.inst >> 9) & 0x3) << 8 |
                    ((DEC.inst >> 11) & 0x1) << 4 | ((DEC.inst >> 12) & 0x1) << 11;
@@ -710,7 +711,6 @@ struct Instruction instructions32[] = {
 
 struct Instruction instructions16[] = {
     {.mask = 0xffff, .match = 0x0000, .func = inst_c_unimp},
-    {.mask = 0xe003, .match = 0x2001, .func = inst_c_addiw},
     {.mask = 0xef83, .match = 0x6101, .func = inst_c_addi16sp},
     {.mask = 0xef83, .match = 0x1, .func = inst_c_nop},
     {.mask = 0xec03, .match = 0x8001, .func = inst_c_srli},
@@ -730,7 +730,6 @@ struct Instruction instructions16[] = {
     {.mask = 0xe003, .match = 0x4000, .func = inst_c_lw},
     {.mask = 0xe003, .match = 0xc000, .func = inst_c_sw},
     {.mask = 0xe003, .match = 0xa001, .func = inst_c_j},
-    {.mask = 0xe003, .match = 0x2001, .func = inst_c_jal},
     {.mask = 0xe003, .match = 0xc001, .func = inst_c_beqz},
     {.mask = 0xe003, .match = 0xe001, .func = inst_c_bnez},
     {.mask = 0xe003, .match = 0x4001, .func = inst_c_li},
@@ -738,8 +737,13 @@ struct Instruction instructions16[] = {
     {.mask = 0xe003, .match = 0xc002, .func = inst_c_swsp},
     {.mask = 0xe003, .match = 0x4002, .func = inst_c_lwsp},
     {.mask = 0xe003, .match = 0x2, .func = inst_c_slli},
-    
+
+#if CURRENT_ARCH == ARCH_RV32
+    {.mask = 0xe003, .match = 0x2001, .func = inst_c_jal},
+#endif
+
 #if CURRENT_ARCH == ARCH_RV64
+    {.mask = 0xe003, .match = 0x2001, .func = inst_c_addiw},
     {.mask = 0xfc63, .match = 0x9c01, .func = inst_c_subw},
     {.mask = 0x9c21, .match = 0x9c21, .func = inst_c_addw},
     {.mask = 0xe003, .match = 0x6002, .func = inst_c_ldsp},

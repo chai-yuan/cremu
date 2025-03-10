@@ -54,8 +54,9 @@ typedef enum {
 #define ASSERT(condition, ...)                                                                                         \
     do {                                                                                                               \
         if (!(condition)) {                                                                                            \
-            WARN("Assertion failed: %s at %s:%d", #condition, __FILE__, __LINE__);                                     \
-            ERROR(__VA_ARGS__);                                                                                        \
+            DEBUG_PRINT(DEBUG_LEVEL_ERROR, COLOR_RED, "Assertion failed: %s", #condition);                             \
+            DEBUG_PRINT(DEBUG_LEVEL_ERROR, COLOR_RED, __VA_ARGS__);                                                    \
+            exit(1);                                                                                                   \
         }                                                                                                              \
     } while (0)
 

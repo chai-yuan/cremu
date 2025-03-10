@@ -56,11 +56,12 @@ void rvcore_exec(struct RiscvCore *core) {
 
     if (DEC.is_inst16) {
         DEC.next_pc = core->pc + 2;
-        for (u32 i = 0;; i++)
+        for (u32 i = 0;; i++) {
             if ((DEC.inst & instructions16[i].mask) == instructions16[i].match) {
                 instructions16[i].func(core);
                 break;
             }
+        }
     } else {
         DEC.next_pc = core->pc + 4;
         for (u32 i = 0;; i++)
