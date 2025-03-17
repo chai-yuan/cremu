@@ -4,7 +4,7 @@
 
 void clint_init(struct CLINT *clint) {
     REG64(clint->data, CLINT_MTIME)    = 0;
-    REG64(clint->data, CLINT_MTIMECMP) = 0;
+    REG64(clint->data, CLINT_MTIMECMP) = 0xffffffffffff;
 }
 
 u64 clint_get_time(struct CLINT *clint) { return REG64(clint->data, CLINT_MTIME); }
