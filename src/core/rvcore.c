@@ -27,7 +27,8 @@ void rvcore_step(struct RiscvCore *core, struct RiscvEnvInfo envinfo) {
             rvcore_trap_handle(core);
     }
 
-    core->pc = core->decode.next_pc;
+    core->regs[0] = 0;
+    core->pc      = core->decode.next_pc;
 }
 
 void rvcore_init(struct RiscvCore *core, struct DeviceFunc device_func) {

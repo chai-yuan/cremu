@@ -100,6 +100,8 @@ struct Instruction {
 #define SV32_W(pte) GET_BITFIELD(pte, 2, 1)
 #define SV32_X(pte) GET_BITFIELD(pte, 3, 1)
 #define SV32_U(pte) GET_BITFIELD(pte, 4, 1)
+#define SV32_A(pte) GET_BITFIELD(pte, 6, 1)
+#define SV32_D(pte) GET_BITFIELD(pte, 7, 1)
 #define SV32_PPN(pte) GET_BITFIELD(pte, 10, 22)
 // SV39PTE
 #define SV39_V(pte) GET_BITFIELD(pte, 0, 1)
@@ -107,6 +109,8 @@ struct Instruction {
 #define SV39_W(pte) GET_BITFIELD(pte, 2, 1)
 #define SV39_X(pte) GET_BITFIELD(pte, 3, 1)
 #define SV39_U(pte) GET_BITFIELD(pte, 4, 1)
+#define SV39_A(pte) GET_BITFIELD(pte, 6, 1)
+#define SV39_D(pte) GET_BITFIELD(pte, 7, 1)
 #define SV39_PPN(pte) GET_BITFIELD(pte, 10, 44)
 // IP
 #define IP_SSIP(pending) GET_BITFIELD(pending, 1, 1)

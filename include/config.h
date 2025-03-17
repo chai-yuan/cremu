@@ -7,12 +7,16 @@
 #define ENABLE_DEBUG_MACROS 1
 #define DEBUG_LEVEL DEBUG_LEVEL_INFO
 
+// 处理器拓展
 #define CURRENT_ARCH ARCH_RV32
-
 #ifndef CURRENT_ARCH
 #define CURRENT_ARCH ARCH_RV64
 #elif CURRENT_ARCH != ARCH_RV32 && CURRENT_ARCH != ARCH_RV64
 #error "Unsupported architecture."
 #endif
+
+#define C_EXTENSION 1
+
+#define SVADU_EXTENSION 1
 
 #endif

@@ -22,6 +22,7 @@ enum exception mmu_translate_sv32(struct RiscvCore *core, enum exception exc, us
 
         if (SV32_V(pt_entry[level]) == 0) // 有效位检查
             return exc;
+
         if (SV32_R(pt_entry[level]) || SV32_X(pt_entry[level]) || SV32_W(pt_entry[level])) { // 叶节点
             switch (level) {
             case 0: {
@@ -40,6 +41,11 @@ enum exception mmu_translate_sv32(struct RiscvCore *core, enum exception exc, us
 
         ppn = SV32_PPN(pt_entry[level]);
     }
+
+#ifdef SVADU_EXTENSION
+    usize set = (exc == STORE_AMO_PAGE_FAULT) ? 0xc0 : 0x40;
+    DW(pt_addr[level], 4, pt_entry[level] | set); // 自动脏位设置
+#endif
 
     return EXC_NONE;
 }
@@ -66,6 +72,7 @@ enum exception mmu_translate_sv39(struct RiscvCore *core, enum exception exc, us
 
         if (SV39_V(pt_entry[level]) == 0) // 有效位检查
             return exc;
+
         if (SV39_R(pt_entry[level]) || SV39_X(pt_entry[level]) || SV39_W(pt_entry[level])) { // 叶节点
             switch (level) {
             case 0: {
@@ -89,7 +96,12 @@ enum exception mmu_translate_sv39(struct RiscvCore *core, enum exception exc, us
         ppn = SV39_PPN(pt_entry[level]);
     }
 
-    //INFO("vaddr : %llx -> paddr : %llx", addr, *paddr);
+#ifdef SVADU_EXTENSION
+    usize set = (exc == STORE_AMO_PAGE_FAULT) ? 0xc0 : 0x40;
+    DW(pt_addr[level], 8, pt_entry[level] | set); // 自动脏位设置
+#endif
+
+    // INFO("vaddr : %llx -> paddr : %llx", addr, *paddr);
     return EXC_NONE;
 }
 

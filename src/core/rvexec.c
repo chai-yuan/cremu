@@ -54,22 +54,22 @@ extern struct Instruction instructions16[];
 void rvcore_exec(struct RiscvCore *core) {
     rvcore_decode_inst(&core->decode);
 
+#ifdef C_EXTENSION
     if (DEC.is_inst16) {
         DEC.next_pc = core->pc + 2;
         for (u32 i = 0;; i++) {
             if ((DEC.inst & instructions16[i].mask) == instructions16[i].match) {
                 instructions16[i].func(core);
-                break;
+                return;
             }
         }
-    } else {
-        DEC.next_pc = core->pc + 4;
-        for (u32 i = 0;; i++)
-            if ((DEC.inst & instructions32[i].mask) == instructions32[i].match) {
-                instructions32[i].func(core);
-                break;
-            }
     }
+#endif
 
-    core->regs[0] = 0;
+    DEC.next_pc = core->pc + 4;
+    for (u32 i = 0;; i++)
+        if ((DEC.inst & instructions32[i].mask) == instructions32[i].match) {
+            instructions32[i].func(core);
+            return;
+        }
 }
