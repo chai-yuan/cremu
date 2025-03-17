@@ -5,6 +5,6 @@ SRCS = $(shell find $(SRCS_DIR) -name '*.c')
 HEADS = $(shell find $(HEADS_DIR) -name '*.h')
 HEADS += $(shell find $(SRCS_DIR) -name '*.h')
 
-PLATFORM ?= linux
+PLATFORM ?= lib
 PLATFORM_DIR = platform/$(PLATFORM)
 include $(PLATFORM_DIR)/Makefile.$(PLATFORM)

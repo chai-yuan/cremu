@@ -51,6 +51,14 @@ void rvcore_csr_write(struct RiscvCore *core, u16 addr, usize value) {
         core->csrs[MSTATUS] = (core->csrs[MSTATUS] & ~SSTATUS_WMASK) | (value & SSTATUS_WMASK);
         break;
     }
+    case MEDELEG: {
+        core->csrs[MEDELEG] = value & MEDELEG_WMASK;
+        break;
+    }
+    case MIDELEG: {
+        core->csrs[MIDELEG] = value & MIDELEG_WMASK;
+        break;
+    }
     case MIP: {
         core->csrs[MIP] = (core->csrs[MIP] & ~IP_WMASK) | (value & IP_WMASK);
         break;

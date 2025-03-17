@@ -15,7 +15,7 @@ bool rvcore_check_pending_interrupt(struct RiscvCore *core);
 
 #define CSRR(addr, value)                                                                                              \
     do {                                                                                                               \
-        if (!rvcore_csr_read(core, addr, &value)) {                                                                     \
+        if (!rvcore_csr_read(core, addr, &value)) {                                                                    \
             DEC.exception     = ILLEGAL_INSTRUCTION;                                                                   \
             DEC.exception_val = DEC.inst;                                                                              \
             return;                                                                                                    \
@@ -38,14 +38,14 @@ struct Instruction {
 #define DEC core->decode
 #define MR(addr, size, data)                                                                                           \
     do {                                                                                                               \
-        if (EXC_NONE != (DEC.exception = rvcore_mmu_read(core, addr, size, &data))) {                               \
+        if (EXC_NONE != (DEC.exception = rvcore_mmu_read(core, addr, size, &data))) {                                  \
             DEC.exception_val = addr;                                                                                  \
             return;                                                                                                    \
         }                                                                                                              \
     } while (0);
 #define MW(addr, size, data)                                                                                           \
     do {                                                                                                               \
-        if (EXC_NONE != (DEC.exception = rvcore_mmu_write(core, addr, size, data)))                                 \
+        if (EXC_NONE != (DEC.exception = rvcore_mmu_write(core, addr, size, data)))                                    \
             DEC.exception_val = addr;                                                                                  \
     } while (0);
 
@@ -53,6 +53,8 @@ struct Instruction {
 #define SSTATUS_RMASK IS_RV64(0x80000003000de762LL, 0x800de762)
 #define SSTATUS_WMASK IS_RV64(0x80000000000de762LL, 0x800de762)
 #define IP_WMASK 0x26
+#define MEDELEG_WMASK 0xb3ff
+#define MIDELEG_WMASK 0x222
 // MTVEC
 #define MTVEC_MODE GET_BITFIELD(core->csrs[MTVEC], 0, 2)
 #define MTVEC_BASE (GET_BITFIELD(core->csrs[MTVEC], 2, IS_RV64(62, 30)) * 4)
