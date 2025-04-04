@@ -40,11 +40,8 @@ void rvcore_init(struct RiscvCore *core, struct DeviceFunc device_func) {
     core->wfi              = false;
     core->device_func      = device_func;
 
-    core->csrs[MARCHID] = 0x5;
-
     // csr 初始化
-#if CURRENT_ARCH == ARCH_RV64
-    core->csrs[MISA]    = 0x8000000000141105;
-    core->csrs[MSTATUS] = 0xa00000000;
-#endif
+    core->csrs[MARCHID] = 0x5;
+    core->csrs[MISA]    = IS_RV64(0x8000000000141105, 0x40141105);
+    core->csrs[MSTATUS] = IS_RV64(0xa00000000, 0x0);
 }

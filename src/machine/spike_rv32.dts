@@ -65,7 +65,4 @@
       reg-io-width = <0x1>;
     };
   };
-  htif {
-    compatible = "ucb,htif0";
-  };
 };

@@ -74,12 +74,6 @@ def process_dts_file(dts_file):
         c_array = convert_dtb_to_c_array(dtb_file)
         if c_array:
             save_c_array(c_array, dts_file)
-        # 清理临时生成的DTB文件
-        try:
-            os.remove(dtb_file)
-            print(f"已删除临时文件: {dtb_file}")
-        except Exception as e:
-            print(f"删除临时文件失败: {e}")
 
 def main():
     # 查找当前目录下的所有DTS文件
