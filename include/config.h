@@ -9,14 +9,13 @@
 
 // 处理器拓展
 #define CURRENT_ARCH ARCH_RV32
+#define C_EXTENSION 1
+#define SVADU_EXTENSION 1
+
 #ifndef CURRENT_ARCH
 #define CURRENT_ARCH ARCH_RV64
 #elif CURRENT_ARCH != ARCH_RV32 && CURRENT_ARCH != ARCH_RV64
 #error "Unsupported architecture."
 #endif
-
-#define C_EXTENSION 1
-
-#define SVADU_EXTENSION 1
 
 #endif
