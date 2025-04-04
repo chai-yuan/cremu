@@ -6,14 +6,14 @@ LDFLAGS =
 
 ARGS ?= 
 
-OBJS = $(patsubst %.c, build/%.o, $(SRCS))
+OBJS = $(patsubst %.c, $(BUILD_DIR)/%.o, $(SRCS))
 LIB_NAME = lib$(PROJECT_NAME).so
 
 $(PROJECT_NAME): $(OBJS)
 	@echo "[LINK] Linking final executable: $@"
 	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-build/%.o: %.c $(HEADS)
+$(BUILD_DIR)/%.o: %.c $(HEADS)
 	@echo "[CC] Compiling $< -> $@"
 	@mkdir -p $(dir $@)  
 	@$(CC) $(CFLAGS) -c $< -o $@
@@ -25,6 +25,6 @@ run: $(PROJECT_NAME)
 clean:
 	@echo "[CLEAN] Cleaning up build artifacts"
 	@rm -f $(PROJECT_NAME) $(OBJS)
-	@rm -rf build
+	@rm -rf $(BUILD_DIR)
 
 .PHONY: clean run
