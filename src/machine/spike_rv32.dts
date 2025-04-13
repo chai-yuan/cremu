@@ -18,7 +18,7 @@
       reg = <0>;
       status = "okay";
       compatible = "riscv";
-      riscv,isa = "rv32imac_zicntr";
+      riscv,isa = "rv32imac_zicntr_svadu";
       mmu-type = "riscv,sv32";
       riscv,pmpregions = <16>;
       riscv,pmpgranularity = <4>;
