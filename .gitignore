@@ -27,6 +27,7 @@ cremu
 
 # 忽略构建目录
 build/
+test/
 
 # 忽略特定于操作系统的文件
 Thumbs.db

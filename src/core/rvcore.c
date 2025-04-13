@@ -3,28 +3,27 @@
 #include "core/riscv.h"
 #include "debug.h"
 
-void rvcore_update(struct RiscvCore *core, struct RiscvEnvInfo envinfo) {
+void rvcore_env_update(struct RiscvCore *core, struct RiscvEnvInfo envinfo) {
     core->csrs[MIP] = 0;
     core->csrs[MIP] |= envinfo.meint ? (1 << MACHINE_EXTERNAL_INTERRUPT) : 0;
     core->csrs[MIP] |= envinfo.seint ? (1 << SUPERVISOR_EXTERNAL_INTERRUPT) : 0;
-    core->csrs[MIP] |= envinfo.mtint ? (1 << SUPERVISOR_TIMER_INTERRUPT) : 0;
     core->csrs[MIP] |= envinfo.mtint ? (1 << MACHINE_TIMER_INTERRUPT) : 0;
     core->csrs[TIME] = envinfo.time;
 }
 
 void rvcore_step(struct RiscvCore *core, struct RiscvEnvInfo envinfo) {
-    rvcore_update(core, envinfo);
+    rvcore_env_update(core, envinfo);
     rvcore_decode_init(&core->decode);
 
-    if (rvcore_check_pending_interrupt(core)) {
-        rvcore_trap_handle(core);
+    if (rvcore_interrupt_handle(core)) {
+        
     } else if (!core->wfi) { // 如果没有处于休眠
         rvcore_mmu_fetch(core);
         if (core->decode.exception == EXC_NONE)
             rvcore_exec(core);
 
         if (core->decode.exception != EXC_NONE)
-            rvcore_trap_handle(core);
+            rvcore_exception_handle(core);
     }
 
     core->regs[0] = 0;

@@ -10,8 +10,8 @@ bool rvcore_csr_read(struct RiscvCore *core, u16 addr, usize *value);
 void rvcore_csr_write(struct RiscvCore *core, u16 addr, usize value);
 
 void rvcore_exec(struct RiscvCore *core);
-void rvcore_trap_handle(struct RiscvCore *core);
-bool rvcore_check_pending_interrupt(struct RiscvCore *core);
+void rvcore_exception_handle(struct RiscvCore *core);
+bool rvcore_interrupt_handle(struct RiscvCore *core);
 
 #define CSRR(addr, value)                                                                                              \
     do {                                                                                                               \
@@ -53,7 +53,7 @@ struct Instruction {
 #define SSTATUS_RMASK IS_RV64(0x80000003000de762LL, 0x800de762)
 #define SSTATUS_WMASK IS_RV64(0x80000000000de762LL, 0x800de762)
 #define IP_WMASK 0x26
-#define MEDELEG_WMASK 0xb3ff
+#define MEDELEG_WMASK 0xfb3ff
 #define MIDELEG_WMASK 0x222
 // MTVEC
 #define MTVEC_MODE GET_BITFIELD(core->csrs[MTVEC], 0, 2)
