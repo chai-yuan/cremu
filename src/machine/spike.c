@@ -16,7 +16,30 @@ u32 boot_rom[0x1000] = {
     0x00000000,
 };
 
-void spike_machine_init(struct SpikeMachine *machine, struct SpikePortableOperations init) {
+void spike_machine_step(void *context) {
+    struct SpikeMachine *machine = context;
+
+    plic_update_interrupt(&machine->plic, uart_check_irq(&machine->uart), 1);
+
+    rvcore_step(&machine->core, (struct RiscvEnvInfo){.meint = false,
+                                                      .seint = plic_check_irq(&machine->plic, 1),
+                                                      .mtint = clint_check_irq(&machine->clint),
+                                                      .time  = clint_get_time(&machine->clint)});
+
+    struct DeviceFunc bus = bus_device_get_func(&machine->bus);
+    bus.update(bus.context, 1);
+}
+
+enum MachineCode spike_machine_check(void *context) {
+    struct SpikeMachine *machine = context;
+
+    if (machine->core.decode.exception == BREAKPOINT) {
+        return machine->core.regs[10] == 0 ? GOOD_END : BAD_END;
+    }
+    return RUNNING;
+}
+
+struct MachineFunc spike_machine_init(struct SpikeMachine *machine, struct PortableOperations init) {
     bus_device_init(&machine->bus);
     sram_init(&machine->sram, init.sram_data, init.sram_size);
     sram_init(&machine->rom, (u8 *)boot_rom, sizeof(boot_rom));
@@ -39,16 +62,10 @@ void spike_machine_init(struct SpikeMachine *machine, struct SpikePortableOperat
     u8 *boot_rom_p = (u8 *)(&boot_rom[8]);
     for (int i = 0; i < dtb_size; i++)
         boot_rom_p[i] = dtb[i];
-}
 
-void spike_machine_step(struct SpikeMachine *machine) {
-    plic_update_interrupt(&machine->plic, uart_check_irq(&machine->uart), 1);
-
-    rvcore_step(&machine->core, (struct RiscvEnvInfo){.meint = false,
-                                                      .seint = plic_check_irq(&machine->plic, 1),
-                                                      .mtint = clint_check_irq(&machine->clint),
-                                                      .time  = clint_get_time(&machine->clint)});
-
-    struct DeviceFunc bus = bus_device_get_func(&machine->bus);
-    bus.update(bus.context, 1);
+    return (struct MachineFunc){
+        .context = machine,
+        .step    = spike_machine_step,
+        .check   = spike_machine_check,
+    };
 }

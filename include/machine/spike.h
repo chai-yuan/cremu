@@ -7,6 +7,13 @@
 #include "device/plic.h"
 #include "device/sram.h"
 #include "device/uart16550.h"
+#include "machine/machine.h"
+
+extern const unsigned char spike_rv32_dtb[];
+extern const unsigned int  spike_rv32_dtb_size;
+
+extern const unsigned char spike_rv64_dtb[];
+extern const unsigned int  spike_rv64_dtb_size;
 
 // 模拟兼容spike的机器实现
 struct SpikeMachine {
@@ -19,15 +26,6 @@ struct SpikeMachine {
     struct PLIC      plic;
 };
 
-struct SpikePortableOperations {
-    u8             *sram_data;
-    u64             sram_size;
-    get_char_func_t get_char;
-    put_char_func_t put_char;
-};
-
-void spike_machine_init(struct SpikeMachine *machine, struct SpikePortableOperations init);
-
-void spike_machine_step(struct SpikeMachine *machine);
+struct MachineFunc spike_machine_init(struct SpikeMachine *machine, struct PortableOperations init);
 
 #endif

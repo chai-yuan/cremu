@@ -1,5 +1,6 @@
 #include "debug.h"
 #include "linux_plat.h"
+#include "machine/machine.h"
 #include "machine/nemu.h"
 #include "machine/spike.h"
 #include "parse_args.h"
@@ -20,34 +21,33 @@ int main(int argc, char *argv[]) {
     memcpy(memory, binary_data, binary_size);
     free(binary_data);
 
-    int ret_val = 0;
+    INFO("%s start!", config.machine);
+    int                ret_val = 0;
+    struct MachineFunc func    = {
+           .context = NULL,
+           .step    = NULL,
+           .check   = NULL,
+    };
+    struct PortableOperations operations = {
+        .sram_data = memory,
+        .sram_size = memory_size,
+        .get_char  = get_char,
+        .put_char  = put_char,
+    };
+
     if (strcmp(config.machine, "spike") == 0) {
-        INFO("spike start!");
         struct SpikeMachine *machine = malloc(sizeof(struct SpikeMachine));
-        spike_machine_init(machine, (struct SpikePortableOperations){
-                                        .sram_data = memory,
-                                        .sram_size = memory_size,
-                                        .get_char  = get_char,
-                                        .put_char  = put_char,
-                                    });
-        while (config.step--) {
-            spike_machine_step(machine);
-        }
+        func                         = spike_machine_init(machine, operations);
     } else if (strcmp(config.machine, "nemu") == 0) {
-        INFO("nemu start!");
         struct NemuMachine *machine = malloc(sizeof(struct NemuMachine));
-        nemu_machine_init(machine, (struct NemuPortableOperations){
-                                       .sram_data = memory,
-                                       .sram_size = memory_size,
-                                       .get_char  = get_char,
-                                       .put_char  = put_char,
-                                   });
-        while (config.step-- && machine->core.decode.exception != BREAKPOINT) {
-            nemu_machine_step(machine);
-        }
-        ret_val = machine->core.regs[10];
+        func                        = nemu_machine_init(machine, operations);
     }
 
+    while ((func.check(func.context) == RUNNING) && config.step--) {
+        func.step(func.context);
+    }
+
+    ret_val = func.check(func.context) == GOOD_END ? 0 : 1;
     ASSERT(ret_val == 0, "ret_val : %d", ret_val);
     return ret_val;
 }

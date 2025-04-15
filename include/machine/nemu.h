@@ -5,6 +5,7 @@
 #include "device/bus.h"
 #include "device/sram.h"
 #include "device/uart16550.h"
+#include "machine/machine.h"
 
 struct NemuMachine {
     struct RiscvCore core;
@@ -13,15 +14,6 @@ struct NemuMachine {
     struct UART16550 uart;
 };
 
-struct NemuPortableOperations {
-    u8             *sram_data;
-    u64             sram_size;
-    get_char_func_t get_char;
-    put_char_func_t put_char;
-};
-
-void nemu_machine_init(struct NemuMachine *machine, struct NemuPortableOperations init);
-
-void nemu_machine_step(struct NemuMachine *machine);
+struct MachineFunc nemu_machine_init(struct NemuMachine *machine, struct PortableOperations init);
 
 #endif
