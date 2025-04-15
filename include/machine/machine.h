@@ -1,6 +1,7 @@
 #ifndef MACHINE_H
 #define MACHINE_H
 
+#include "device/gpu.h"
 #include "device/uart16550.h"
 
 enum MachineCode {
@@ -10,10 +11,11 @@ enum MachineCode {
 };
 
 struct PortableOperations {
-    u8             *sram_data;
-    u64             sram_size;
-    get_char_func_t get_char;
-    put_char_func_t put_char;
+    u8                       *sram_data;
+    u64                       sram_size;
+    get_char_func_t           get_char;
+    put_char_func_t           put_char;
+    update_framebuffer_func_t update_framebuffer;
 };
 
 typedef void (*step_func_t)(void *machine);

@@ -1,12 +1,11 @@
 #ifndef LINUX_PLAT_H
 #define LINUX_PLAT_H
 
+#include "SDL2/SDL.h"
 #include "types.h"
 #include <fcntl.h>
 #include <signal.h>
-#include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
 
@@ -56,6 +55,29 @@ void put_char(u8 data) {
         exit(1);
 }
 
+static SDL_Window   *window   = NULL;
+static SDL_Renderer *renderer = NULL;
+static SDL_Texture  *texture  = NULL;
+
+void init_sdl(int width, int height) {
+    SDL_Init(SDL_INIT_VIDEO);
+    SDL_CreateWindowAndRenderer(width, height, 0, &window, &renderer);
+    SDL_SetWindowTitle(window, "cremu");
+    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, width, height);
+}
+void update_framebuffer(uint32_t *data, int width, int height) {
+    SDL_UpdateTexture(texture, NULL, data, width * sizeof(uint32_t));
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    SDL_RenderPresent(renderer);
+}
+void cleanup_sdl(void) {
+    SDL_DestroyTexture(texture);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+}
+
 static struct termios orig_termios;
 
 void restore_terminal(void) { tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios); }
@@ -87,6 +109,9 @@ void init(void) {
     // 注册清理函数
     atexit(restore_terminal);
     signal(SIGINT, handle_sigint);
+
+    // 初始化显示窗口
+    init_sdl(640, 480);
 }
 
 #endif

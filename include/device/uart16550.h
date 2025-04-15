@@ -30,7 +30,7 @@ typedef void (*put_char_func_t)(u8 data);
 struct UART16550 {
     u8  data[UART_SIZE]; // 模拟 UART 寄存器
     u8  divregs[2];      // 除数寄存器
-    u32 last_update;
+    u64 last_update;
 
     get_char_func_t get_char; // 外部提供的输入函数
     put_char_func_t put_char; // 外部提供的输出函数

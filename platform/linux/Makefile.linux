@@ -2,7 +2,8 @@ SRCS += $(wildcard $(PLATFORM_DIR)/*.c)
 
 CC = gcc
 CFLAGS = -Wall -Werror -pedantic -std=c99 -O3 -I$(HEADS_DIR)
-LDFLAGS =
+CFLAGS += `sdl2-config --cflags`
+LDFLAGS = `sdl2-config --libs`
 
 ARGS ?= 
 

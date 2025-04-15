@@ -108,7 +108,7 @@ void inst_div(struct RiscvCore *core) {
     isize src2 = RS2;
     if (src2 == 0) {
         RD = (isize)-1;
-    } else if (src1 == INT_MIN && src2 == -1) {
+    } else if (src1 == INTMIN && src2 == -1) {
         RD = src1;
     } else {
         RD = src1 / src2;
@@ -128,7 +128,7 @@ void inst_rem(struct RiscvCore *core) {
     isize src2 = RS2;
     if (src2 == 0) {
         RD = src1;
-    } else if (src1 == INT_MIN && src2 == -1) {
+    } else if (src1 == INTMIN && src2 == -1) {
         RD = 0;
     } else {
         RD = src1 % src2;
@@ -460,7 +460,7 @@ void inst_divw(struct RiscvCore *core) {
     i32 src1 = RS1, src2 = RS2;
     if (src2 == 0) {
         RD = -1ll;
-    } else if (src1 == INT32_MIN && src2 == -1) {
+    } else if (src1 == INT32MIN && src2 == -1) {
         RD = (i64)src1;
     } else {
         RD = (i64)(src1 / src2);
@@ -481,7 +481,7 @@ void inst_remw(struct RiscvCore *core) {
     i32 src2 = RS2;
     if (src2 == 0) {
         RD = (i64)src1;
-    } else if (src1 == INT32_MIN && src2 == -1) {
+    } else if (src1 == INT32MIN && src2 == -1) {
         RD = 0;
     } else {
         RD = (i64)(src1 % src2);

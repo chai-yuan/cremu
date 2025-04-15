@@ -4,6 +4,7 @@
 #include "machine/nemu.h"
 #include "machine/spike.h"
 #include "parse_args.h"
+#include <SDL2/SDL.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,10 +30,11 @@ int main(int argc, char *argv[]) {
            .check   = NULL,
     };
     struct PortableOperations operations = {
-        .sram_data = memory,
-        .sram_size = memory_size,
-        .get_char  = get_char,
-        .put_char  = put_char,
+        .sram_data          = memory,
+        .sram_size          = memory_size,
+        .get_char           = get_char,
+        .put_char           = put_char,
+        .update_framebuffer = update_framebuffer,
     };
 
     if (strcmp(config.machine, "spike") == 0) {

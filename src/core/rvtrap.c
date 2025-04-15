@@ -2,7 +2,7 @@
 #include "debug.h"
 
 void rvcore_trap_handle_s(struct RiscvCore *core, usize cause) {
-    usize vec   = ((cause & INT_MIN) && STVEC_MODE == 1) ? (4 * cause) : 0;
+    usize vec   = ((cause & INTMIN) && STVEC_MODE == 1) ? (4 * cause) : 0;
     DEC.next_pc = STVEC_BASE + vec;
     MSTATUS_SET_SPP(core->mode & 0x1);
     core->mode         = SUPERVISOR;
@@ -14,7 +14,7 @@ void rvcore_trap_handle_s(struct RiscvCore *core, usize cause) {
 }
 
 void rvcore_trap_handle_m(struct RiscvCore *core, usize cause) {
-    usize vec   = ((cause & INT_MIN) && MTVEC_MODE == 1) ? (4 * cause) : 0;
+    usize vec   = ((cause & INTMIN) && MTVEC_MODE == 1) ? (4 * cause) : 0;
     DEC.next_pc = MTVEC_BASE + vec;
     MSTATUS_SET_MPP(core->mode);
     core->mode         = MACHINE;
@@ -73,9 +73,9 @@ bool rvcore_interrupt_handle(struct RiscvCore *core) {
     if (cause != INT_NONE) {
         core->wfi = false; // 触发中断后清除休眠标志
         if (handle_in_m)
-            rvcore_trap_handle_m(core, cause | INT_MIN);
+            rvcore_trap_handle_m(core, cause | INTMIN);
         else
-            rvcore_trap_handle_s(core, cause | INT_MIN);
+            rvcore_trap_handle_s(core, cause | INTMIN);
     }
     return cause != INT_NONE;
 }
