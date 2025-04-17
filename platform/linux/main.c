@@ -1,9 +1,11 @@
 #include "debug.h"
-#include "linux_plat.h"
 #include "machine/machine.h"
 #include "machine/nemu.h"
 #include "machine/spike.h"
 #include "parse_args.h"
+#include "sdl2.h"
+#include "terminal.h"
+#include "utils.h"
 #include <SDL2/SDL.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -11,9 +13,11 @@
 #include <unistd.h>
 
 int main(int argc, char *argv[]) {
+    // 获得设置并初始化
     Config config;
     parse_args(argc, argv, &config);
-    init();
+    init_terminal();
+    init_sdl(640, 480);
 
     size_t    binary_size;
     void     *binary_data = load_binary(config.bin, &binary_size);
@@ -21,7 +25,8 @@ int main(int argc, char *argv[]) {
     u8       *memory      = malloc(memory_size);
     memcpy(memory, binary_data, binary_size);
     free(binary_data);
-
+    
+    // 选择机器类型
     INFO("%s start!", config.machine);
     int                ret_val = 0;
     struct MachineFunc func    = {
@@ -44,7 +49,8 @@ int main(int argc, char *argv[]) {
         struct NemuMachine *machine = malloc(sizeof(struct NemuMachine));
         func                        = nemu_machine_init(machine, operations);
     }
-
+    
+    // 执行
     while ((func.check(func.context) == RUNNING) && config.step--) {
         func.step(func.context);
     }
