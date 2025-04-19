@@ -1,4 +1,5 @@
 #include "debug.h"
+#include "machine/crrv.h"
 #include "machine/machine.h"
 #include "machine/nemu.h"
 #include "machine/spike.h"
@@ -25,7 +26,7 @@ int main(int argc, char *argv[]) {
     u8       *memory      = malloc(memory_size);
     memcpy(memory, binary_data, binary_size);
     free(binary_data);
-    
+
     // 选择机器类型
     INFO("%s start!", config.machine);
     int                ret_val = 0;
@@ -48,8 +49,11 @@ int main(int argc, char *argv[]) {
     } else if (strcmp(config.machine, "nemu") == 0) {
         struct NemuMachine *machine = malloc(sizeof(struct NemuMachine));
         func                        = nemu_machine_init(machine, operations);
+    } else if (strcmp(config.machine, "crrv") == 0) {
+        struct CrrvMachine *machine = malloc(sizeof(struct CrrvMachine));
+        func                        = crrv_machine_init(machine, operations);
     }
-    
+
     // 执行
     while ((func.check(func.context) == RUNNING) && config.step--) {
         func.step(func.context);
