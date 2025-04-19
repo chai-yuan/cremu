@@ -19,13 +19,13 @@ enum MachineCode nemu_machine_check(void *context) {
 struct MachineFunc nemu_machine_init(struct NemuMachine *machine, struct PortableOperations init) {
     bus_device_init(&machine->bus);
     sram_init(&machine->sram, init.sram_data, init.sram_size);
-    uart_init(&machine->uart, init.get_char, init.put_char);
+    uartlite_init(&machine->uart, init.get_char, init.put_char);
     clint_init(&machine->clint);
     gpu_init(&machine->gpu, init.update_framebuffer);
 
     bus_device_add(&machine->bus, 0x80000000, machine->sram.len, sram_get_func(&machine->sram));
     bus_device_add(&machine->bus, 0x40000000, GPU_SIZE, gpu_get_func(&machine->gpu));
-    bus_device_add(&machine->bus, 0x10000000, UART_SIZE, uart_get_func(&machine->uart));
+    bus_device_add(&machine->bus, 0x10000000, UART_SIZE, uartlite_get_func(&machine->uart));
     bus_device_add(&machine->bus, 0x02000000, CLINT_SIZE, clint_get_func(&machine->clint));
 
     rvcore_init(&machine->core, bus_device_get_func(&machine->bus));

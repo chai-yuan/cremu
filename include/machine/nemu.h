@@ -5,7 +5,7 @@
 #include "device/bus.h"
 #include "device/clint.h"
 #include "device/sram.h"
-#include "device/uart16550.h"
+#include "device/uartlite.h"
 #include "machine/machine.h"
 
 struct NemuMachine {
@@ -13,7 +13,7 @@ struct NemuMachine {
     struct BusDevice bus;
     struct Sram      sram;
     struct CLINT     clint;
-    struct UART16550 uart;
+    struct UARTLite  uart;
     struct GPU       gpu;
 };
 

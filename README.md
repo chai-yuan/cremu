@@ -3,7 +3,7 @@
 [![GitHub Stars](https://img.shields.io/github/stars/chai-yuan/cremu?style=flat-square)](https://github.com/chai-yuan/cremu)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 
-**cremu** 是一个用C99实现的轻量级RISC-V模拟器，设计注重易学性和可移植性。它支持多种RISC-V特性和操作系统，是学习计算机体系结构和系统模拟的理想工具。
+**cremu** 是一个用C99实现的轻量级RISC-V模拟器，设计注重易学性和可移植性。
 
 👉 **[立即体验WebAssembly版本](https://chai-yuan.github.io/cremu/)** 👈
 
