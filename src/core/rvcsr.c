@@ -77,7 +77,7 @@ void rvcore_csr_write(struct RiscvCore *core, u16 addr, usize value) {
         core->csrs[SATP] = value;
 #if CURRENT_ARCH == ARCH_RV64 // 64位情况下仅支持sv39
         if (SATP_MODE != 0x8 && SATP_MODE != 0)
-            SATP_SET_MODE(0);
+            core->csrs[SATP] = 0; // 写入0表示非sv39模式开启失败
 #endif
         break;
     }

@@ -53,6 +53,7 @@ extern struct Instruction instructions16[];
 
 void rvcore_exec(struct RiscvCore *core) {
     rvcore_decode_inst(&core->decode);
+//    INFO("pc : %llx", core->pc);
 
 #ifdef C_EXTENSION
     if (DEC.is_inst16) {

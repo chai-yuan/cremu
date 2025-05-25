@@ -43,39 +43,30 @@ bool rvcore_interrupt_handle(struct RiscvCore *core) {
     if (pending == 0)
         return false;
 
-    usize enable_interrupts = 0;
-    bool  handle_in_m       = false;
-    // 这里先检查是否有中断被委托到S模式
     usize supervisor_enable = core->mode < SUPERVISOR || (core->mode == SUPERVISOR && MSTATUS_SIE);
-    enable_interrupts       = supervisor_enable ? (pending & core->csrs[MIDELEG]) : 0;
-    // 如果没有，检查M模式是否能接收中断
-    if (enable_interrupts == 0) {
-        usize machine_enable = core->mode < MACHINE || (core->mode == MACHINE && MSTATUS_MIE);
-        enable_interrupts    = machine_enable ? pending : 0;
-        handle_in_m          = true;
-    }
+    usize machine_enable    = core->mode < MACHINE || (core->mode == MACHINE && MSTATUS_MIE);
 
     usize cause = INT_NONE;
-    if (IP_SSIP(enable_interrupts))
+    if (IP_SSIP(pending))
         cause = SUPERVISOR_SOFTWARE_INTERRUPT;
-    if (IP_STIP(enable_interrupts))
+    if (IP_STIP(pending))
         cause = SUPERVISOR_TIMER_INTERRUPT;
-    if (IP_SEIP(enable_interrupts))
+    if (IP_SEIP(pending))
         cause = SUPERVISOR_EXTERNAL_INTERRUPT;
-    if (IP_MSIP(enable_interrupts))
+    if (IP_MSIP(pending))
         cause = MACHINE_SOFTWARE_INTERRUPT;
-    if (IP_MTIP(enable_interrupts))
+    if (IP_MTIP(pending))
         cause = MACHINE_TIMER_INTERRUPT;
-    if (IP_MEIP(enable_interrupts))
+    if (IP_MEIP(pending))
         cause = MACHINE_EXTERNAL_INTERRUPT;
 
-    // 处理中断
     if (cause != INT_NONE) {
         core->wfi = false; // 触发中断后清除休眠标志
-        if (handle_in_m)
-            rvcore_trap_handle_m(core, cause | INTMIN);
-        else
+        if (supervisor_enable) {
             rvcore_trap_handle_s(core, cause | INTMIN);
+        } else if (machine_enable) {
+            rvcore_trap_handle_m(core, cause | INTMIN);
+        }
     }
     return cause != INT_NONE;
 }

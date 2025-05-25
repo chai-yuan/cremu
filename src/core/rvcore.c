@@ -4,10 +4,10 @@
 #include "debug.h"
 
 void rvcore_env_update(struct RiscvCore *core, struct RiscvEnvInfo envinfo) {
-    core->csrs[MIP] = 0;
-    core->csrs[MIP] |= envinfo.meint ? (1 << MACHINE_EXTERNAL_INTERRUPT) : 0;
-    core->csrs[MIP] |= envinfo.seint ? (1 << SUPERVISOR_EXTERNAL_INTERRUPT) : 0;
-    core->csrs[MIP] |= envinfo.mtint ? (1 << MACHINE_TIMER_INTERRUPT) : 0;
+    /*core->csrs[MIP] = 0;*/
+    /*core->csrs[MIP] |= envinfo.meint ? (1 << MACHINE_EXTERNAL_INTERRUPT) : 0;*/
+    /*core->csrs[MIP] |= envinfo.seint ? (1 << SUPERVISOR_EXTERNAL_INTERRUPT) : 0;*/
+    /*core->csrs[MIP] |= envinfo.mtint ? (1 << MACHINE_TIMER_INTERRUPT) : 0;*/
     core->csrs[TIME] = envinfo.time;
 }
 
@@ -16,7 +16,6 @@ void rvcore_step(struct RiscvCore *core, struct RiscvEnvInfo envinfo) {
     rvcore_decode_init(&core->decode);
 
     if (rvcore_interrupt_handle(core)) {
-        
     } else if (!core->wfi) { // 如果没有处于休眠
         rvcore_mmu_fetch(core);
         if (core->decode.exception == EXC_NONE)

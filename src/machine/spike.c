@@ -19,7 +19,7 @@ u32 boot_rom[0x1000] = {
 void spike_machine_step(void *context) {
     struct SpikeMachine *machine = context;
 
-    plic_update_interrupt(&machine->plic, uart_check_irq(&machine->uart), 1);
+//    plic_update_interrupt(&machine->plic, uart_check_irq(&machine->uart), 1);
     rvcore_step(&machine->core, (struct RiscvEnvInfo){.meint = false,
                                                       .seint = plic_check_irq(&machine->plic, 1),
                                                       .mtint = clint_check_irq(&machine->clint),
@@ -30,11 +30,6 @@ void spike_machine_step(void *context) {
 }
 
 enum MachineCode spike_machine_check(void *context) {
-    struct SpikeMachine *machine = context;
-
-    if (machine->core.decode.exception == BREAKPOINT) {
-        return machine->core.regs[10] == 0 ? GOOD_END : BAD_END;
-    }
     return RUNNING;
 }
 

@@ -25,6 +25,10 @@ struct RiscvCore *difftest_init(const u8 *data, u64 data_size) {
 void difftest_step(void) { func.step(func.context); }
 
 void difftest_interrupt(const u64 ip) {
+    if (ip != machine.core.csrs[MIP]) {
+        INFO("MIP : %llx -> %llx", machine.core.csrs[MIP], ip);
+        INFO("MIDELEG : %llx", machine.core.csrs[MIDELEG]);
+    }
     machine.core.csrs[MIP] = ip;
     if ((ip == 0x200) | (ip == 0x800)) {
         plic_update_interrupt(&machine.plic, true, 1);
