@@ -5,6 +5,8 @@
 *.dll
 *.exe
 .cache/
+*.dtb
+compile_commands.json
 cremu
 
 # 忽略编译中间文件
@@ -25,7 +27,9 @@ cremu
 *.bin
 
 # 忽略构建目录
+.cache/
 build/
+test/
 
 # 忽略特定于操作系统的文件
 Thumbs.db

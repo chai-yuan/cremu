@@ -1,13 +1,11 @@
 SRCS += $(wildcard $(PLATFORM_DIR)/*.c)
+OBJS = $(patsubst %.c, build/%.o, $(SRCS))
 
 CC = gcc
 CFLAGS = -Wall -Werror -pedantic -std=c99 -O2 -I$(HEADS_DIR)
 LDFLAGS =
 
 ARGS ?= 
-
-OBJS = $(patsubst %.c, build/%.o, $(SRCS))
-LIB_NAME = lib$(PROJECT_NAME).so
 
 $(PROJECT_NAME): $(OBJS)
 	@echo "[LINK] Linking final executable: $@"
