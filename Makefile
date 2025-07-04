@@ -1,10 +1,10 @@
-PROJECT_NAME = emu
+PROJECT_NAME = cremu
 
-SRCS_DIR = cremu
-HEADS_DIR = cremu/include
+SRCS_DIR = emu
+HEADS_DIR = emu/include
 
 SRCS = $(shell find $(SRCS_DIR) -name '*.c')
-HEADS = $(shell find $(HEADS_DIR) -name '*.h')
+HEADS = $(shell find $(SRCS_DIR) -name '*.h')
 
 PLATFORM ?= linux
 PLATFORM_DIR = platform/$(PLATFORM)

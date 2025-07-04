@@ -27,6 +27,7 @@
           pkgs.bear
           pkgs.clang-tools
           pkgs.dtc
+          pkgs.SDL2
         ];
 
         shellHook = ''
